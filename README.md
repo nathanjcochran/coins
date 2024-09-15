@@ -15,8 +15,9 @@ go install github.com/nathanjcochran/coins@main
 ```
 Usage of coins:
   -c int
-        Number of coins to flip (default 100)
+    	Number of coins to flip (default 100)
   -h int
-        Number of heads for a win (default 2)
-  -v    Print results of each flip
+    	Number of heads for a win (default 2)
+  -p format
+    	Result printing format (none, long, heads) (default none)
 ```

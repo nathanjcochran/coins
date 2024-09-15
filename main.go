@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"flag"
 	"fmt"
 	"math/big"
@@ -9,11 +8,10 @@ import (
 )
 
 func main() {
-	var (
-		coins   = flag.Int("c", 100, "Number of coins to flip")
-		heads   = flag.Int("h", 2, "Number of heads for a win")
-		verbose = flag.Bool("v", false, "Print results of each flip")
-	)
+	var printFmt printFmt
+	coins := flag.Int("c", 100, "Number of coins to flip")
+	heads := flag.Int("h", 2, "Number of heads for a win")
+	flag.TextVar(&printFmt, "p", printFmtNone, "Result printing `format` (none, long, heads)")
 	flag.Parse()
 
 	draws, aliceWins, bobWins := flip(state{
@@ -22,7 +20,7 @@ func main() {
 		draws:     big.NewInt(0),
 		aliceWins: big.NewInt(0),
 		bobWins:   big.NewInt(0),
-		verbose:   *verbose,
+		printFmt:  printFmt,
 	})
 	fmt.Printf("Draws:      %s\n", draws)
 	fmt.Printf("Alice wins: %s\n", aliceWins)
@@ -43,7 +41,7 @@ type state struct {
 	draws      *big.Int
 	aliceWins  *big.Int
 	bobWins    *big.Int
-	verbose    bool
+	printFmt   printFmt
 }
 
 func flip(s state) (*big.Int, *big.Int, *big.Int) {
@@ -143,11 +141,4 @@ func remainingEnumerations(s state) *big.Int {
 		big.NewInt(int64(unFlipped)),
 		nil,
 	)
-}
-
-func printResults(s state, msg string, enumerations *big.Int) {
-	if s.verbose {
-		out := bytes.Replace(s.coins, nil, []byte{' '}, -1)
-		fmt.Printf("%s %s (%s)\n", out, msg, enumerations)
-	}
 }
