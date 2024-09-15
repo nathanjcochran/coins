@@ -12,6 +12,7 @@ type printFmt uint8
 
 const (
 	printFmtNone printFmt = iota
+	printFmtShort
 	printFmtLong
 	printFmtSpace
 	printFmtHeads
@@ -22,6 +23,8 @@ func (f *printFmt) UnmarshalText(b []byte) error {
 	switch s {
 	case "none":
 		*f = printFmtNone
+	case "short":
+		*f = printFmtShort
 	case "long":
 		*f = printFmtLong
 	case "space":
@@ -38,6 +41,8 @@ func (f printFmt) MarshalText() ([]byte, error) {
 	switch f {
 	case printFmtNone:
 		return []byte("none"), nil
+	case printFmtShort:
+		return []byte("short"), nil
 	case printFmtLong:
 		return []byte("long"), nil
 	case printFmtSpace:
@@ -52,6 +57,8 @@ func (f printFmt) MarshalText() ([]byte, error) {
 func printResults(s state, msg string, enumerations *big.Int) {
 	switch s.printFmt {
 	case printFmtNone:
+	case printFmtShort:
+		printShort(s, msg, enumerations)
 	case printFmtLong:
 		printLong(s, msg, enumerations)
 	case printFmtSpace:
@@ -61,6 +68,38 @@ func printResults(s state, msg string, enumerations *big.Int) {
 	default:
 		panic(fmt.Errorf("Invalid result format: %v", s.printFmt))
 	}
+}
+
+func printShort(s state, msg string, enumerations *big.Int) {
+	appendLine := func(strs []string, start, idx int, last byte) []string {
+		diff := idx - start
+		if diff > 0 && diff < 4 {
+			for i := 0; i < diff; i++ {
+				strs = append(strs, string([]byte{last}))
+			}
+		} else if diff >= 4 {
+			strs = append(strs, fmt.Sprintf("%c(%d-%d)", last, start+1, idx))
+		}
+		return strs
+	}
+
+	var (
+		strs  []string
+		last  byte
+		start int
+	)
+	for i, c := range s.coins {
+		if c == last {
+			continue
+		}
+
+		strs = appendLine(strs, start, i, last)
+		last = c
+		start = i
+	}
+	strs = appendLine(strs, start, len(s.coins), last)
+
+	fmt.Printf("%s \t%s (%s)\n", strings.Join(strs, " "), msg, enumerations)
 }
 
 func printLong(s state, msg string, enumerations *big.Int) {

@@ -19,5 +19,5 @@ Usage of coins:
   -h int
     	Number of heads for a win (default 2)
   -p format
-    	Result printing format (none, long, space, heads) (default none)
+    	Result printing format (none, short, long, space, heads) (default none)
 ```
