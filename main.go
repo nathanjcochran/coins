@@ -11,7 +11,7 @@ func main() {
 	var printFmt printFmt
 	coins := flag.Int("c", 100, "Number of coins to flip")
 	heads := flag.Int("h", 2, "Number of heads for a win")
-	flag.TextVar(&printFmt, "p", printFmtNone, "Result printing `format` (none, long, heads)")
+	flag.TextVar(&printFmt, "p", printFmtNone, "Result printing `format` (none, long, space, heads)")
 	flag.Parse()
 
 	draws, aliceWins, bobWins := flip(state{

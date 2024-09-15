@@ -1,6 +1,7 @@
 package main
 
 import (
+	"bytes"
 	"fmt"
 	"math"
 	"math/big"
@@ -12,6 +13,7 @@ type printFmt uint8
 const (
 	printFmtNone printFmt = iota
 	printFmtLong
+	printFmtSpace
 	printFmtHeads
 )
 
@@ -22,6 +24,8 @@ func (f *printFmt) UnmarshalText(b []byte) error {
 		*f = printFmtNone
 	case "long":
 		*f = printFmtLong
+	case "space":
+		*f = printFmtSpace
 	case "heads":
 		*f = printFmtHeads
 	default:
@@ -36,6 +40,8 @@ func (f printFmt) MarshalText() ([]byte, error) {
 		return []byte("none"), nil
 	case printFmtLong:
 		return []byte("long"), nil
+	case printFmtSpace:
+		return []byte("space"), nil
 	case printFmtHeads:
 		return []byte("heads"), nil
 	default:
@@ -48,6 +54,8 @@ func printResults(s state, msg string, enumerations *big.Int) {
 	case printFmtNone:
 	case printFmtLong:
 		printLong(s, msg, enumerations)
+	case printFmtSpace:
+		printSpace(s, msg, enumerations)
 	case printFmtHeads:
 		printHeads(s, msg, enumerations)
 	default:
@@ -57,6 +65,11 @@ func printResults(s state, msg string, enumerations *big.Int) {
 
 func printLong(s state, msg string, enumerations *big.Int) {
 	fmt.Printf("%s %s (%s)\n", string(s.coins), msg, enumerations)
+}
+
+func printSpace(s state, msg string, enumerations *big.Int) {
+	str := bytes.TrimLeft(bytes.Replace(s.coins, nil, []byte{' '}, -1), " ")
+	fmt.Printf("%s %s (%s)\n", str, msg, enumerations)
 }
 
 func printHeads(s state, msg string, enumerations *big.Int) {
