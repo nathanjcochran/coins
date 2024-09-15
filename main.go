@@ -32,9 +32,9 @@ func main() {
 		bobWins:   big.NewInt(0),
 		verbose:   *verbose,
 	})
-	fmt.Printf("Draws: %s\n", draws)
+	fmt.Printf("Draws:      %s\n", draws)
 	fmt.Printf("Alice wins: %s\n", aliceWins)
-	fmt.Printf("Bob wins: %s\n", bobWins)
+	fmt.Printf("Bob wins:   %s\n", bobWins)
 }
 
 type state struct {
