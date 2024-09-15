@@ -8,19 +8,11 @@ import (
 	"slices"
 )
 
-const (
-	defaultCoins   = 100
-	defaultHeads   = 2
-	defaultVerbose = false
-)
-
-var coinSides = []byte{'H', 'T'}
-
 func main() {
 	var (
-		coins   = flag.Int("coins", defaultCoins, "Number of coins to flip")
-		heads   = flag.Int("heads", defaultHeads, "Number of heads for a win")
-		verbose = flag.Bool("v", defaultVerbose, "Print results of each flip")
+		coins   = flag.Int("c", 100, "Number of coins to flip")
+		heads   = flag.Int("h", 2, "Number of heads for a win")
+		verbose = flag.Bool("v", false, "Print results of each flip")
 	)
 	flag.Parse()
 
@@ -36,6 +28,8 @@ func main() {
 	fmt.Printf("Alice wins: %s\n", aliceWins)
 	fmt.Printf("Bob wins:   %s\n", bobWins)
 }
+
+var coinSides = []byte{'H', 'T'}
 
 type state struct {
 	coins      []byte
