@@ -1,7 +1,6 @@
 package main
 
 import (
-	"bytes"
 	"fmt"
 	"math"
 	"math/big"
@@ -57,8 +56,7 @@ func printResults(s state, msg string, enumerations *big.Int) {
 }
 
 func printLong(s state, msg string, enumerations *big.Int) {
-	str := bytes.Replace(s.coins, nil, []byte{' '}, -1)
-	fmt.Printf("%s %s (%s)\n", str, msg, enumerations)
+	fmt.Printf("%s %s (%s)\n", string(s.coins), msg, enumerations)
 }
 
 func printHeads(s state, msg string, enumerations *big.Int) {
