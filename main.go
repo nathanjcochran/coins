@@ -12,17 +12,19 @@ var coinSides = []byte{'H', 'T'}
 
 func main() {
 	var (
-		numCoins     = flag.Int("n", 10, "Number of coins to flip")
-		printResults = flag.Bool("p", false, "Print results of each flip")
+		coins   = flag.Int("coins", 100, "Number of coins to flip")
+		heads   = flag.Int("heads", 2, "Number of heads for a win")
+		verbose = flag.Bool("v", false, "Print results of each flip")
 	)
 	flag.Parse()
 
 	draws, aliceWins, bobWins := flip(state{
-		coins:        slices.Repeat([]byte{'_'}, *numCoins),
-		draws:        big.NewInt(0),
-		aliceWins:    big.NewInt(0),
-		bobWins:      big.NewInt(0),
-		printResults: *printResults,
+		coins:     slices.Repeat([]byte{'_'}, *coins),
+		heads:     *heads,
+		draws:     big.NewInt(0),
+		aliceWins: big.NewInt(0),
+		bobWins:   big.NewInt(0),
+		verbose:   *verbose,
 	})
 	fmt.Printf("Draws: %s\n", draws)
 	fmt.Printf("Alice wins: %s\n", aliceWins)
@@ -30,17 +32,18 @@ func main() {
 }
 
 type state struct {
-	coins        []byte
-	turn         int
-	flipped      int
-	bobIdx       int
-	aliceIdx     int
-	aliceHeads   int
-	bobHeads     int
-	draws        *big.Int
-	aliceWins    *big.Int
-	bobWins      *big.Int
-	printResults bool
+	coins      []byte
+	heads      int
+	turn       int
+	flipped    int
+	bobIdx     int
+	aliceIdx   int
+	aliceHeads int
+	bobHeads   int
+	draws      *big.Int
+	aliceWins  *big.Int
+	bobWins    *big.Int
+	verbose    bool
 }
 
 func flip(s state) (*big.Int, *big.Int, *big.Int) {
@@ -96,25 +99,26 @@ func calculateResults(s state) (*big.Int, *big.Int, *big.Int) {
 	}
 
 	switch {
-	case s.aliceHeads == 2 && s.bobHeads == 2:
+	case s.aliceHeads == s.heads && s.bobHeads == s.heads:
 		// Entire subtree is a draw
 		enumerations := remainingEnumerations(s)
 		s.draws.Add(s.draws, enumerations)
 		printResults(s, "Draw", enumerations)
 		return s.draws, s.aliceWins, s.bobWins
-	case s.aliceHeads == 2:
+	case s.aliceHeads == s.heads:
 		// Alice wins entire subtree
 		enumerations := remainingEnumerations(s)
 		s.aliceWins.Add(s.aliceWins, enumerations)
 		printResults(s, "Alice", enumerations)
 		return s.draws, s.aliceWins, s.bobWins
-	case s.bobHeads == 2:
+	case s.bobHeads == s.heads:
 		// Bob wins entire subtree
 		enumerations := remainingEnumerations(s)
 		s.bobWins.Add(s.bobWins, enumerations)
 		printResults(s, "Bob", enumerations)
 		return s.draws, s.aliceWins, s.bobWins
 	case s.turn == len(s.coins)-1:
+		// Flipped all coins and nobody won, so it's a draw
 		enumerations := remainingEnumerations(s)
 		s.draws.Add(s.draws, enumerations)
 		printResults(s, "Draw", enumerations)
@@ -142,6 +146,8 @@ func remainingEnumerations(s state) *big.Int {
 }
 
 func printResults(s state, msg string, enumerations *big.Int) {
-	out := bytes.Replace(s.coins, nil, []byte{' '}, -1)
-	fmt.Printf("%s %s (%s)\n", out, msg, enumerations)
+	if s.verbose {
+		out := bytes.Replace(s.coins, nil, []byte{' '}, -1)
+		fmt.Printf("%s %s (%s)\n", out, msg, enumerations)
+	}
 }
